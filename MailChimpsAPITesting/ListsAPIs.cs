@@ -9,15 +9,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MailChimpsAPITesting
 {
-    public class List
-    {
-        public string name { get; set; }
-        public string contact { get; set; }
-        public string notify_on_subscribe { get; set; }
-        public string notify_on_unsubscribe { get; set; }   
-        public string email_type_option { get; set; }
-        public string visibility { get; set; }
-    }
+    
     [TestClass]
     public class ListTest
     {
