@@ -1,0 +1,25 @@
+﻿{
+  "name": "List_Name",
+  "contact": {
+    "company": "company_name",
+    "address1": "12211 Unknown ave",
+    "address2": "",
+    "city": "Los Town",
+    "state": "CA",
+    "zip": "91234",
+    "country": "USA",
+    "phone": "8181818181"
+  },
+  "permission_reminder": "You are receving this email because you wante to wkkely reminder",
+  "use_archive_bar": true,
+  "campaign_defaults": {
+    "from_name": "codeandqa owner",
+    "from_email": "f_email_add",
+    "subject": "Welcome to new list",
+    "language": "en"
+  },
+  "notify_on_subscribe": "admin@codeandqa.com",
+  "notify_on_unsubscribe": "admin@codeandqa.com",
+  "email_type_option": true,
+  "visibility": "prv"
+}
