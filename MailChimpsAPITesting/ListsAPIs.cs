@@ -14,20 +14,32 @@ namespace MailChimpsAPITesting
     public class ListTest
     {
         string endPoint = "https://us17.api.mailchimp.com/3.0/";
-        string key = "d13d89c0d2f1074e165f06302450314a-us17";
+        string key = "fea6a2547s811se37ef219fe4s40d2f7-zk-uk";
+        WebClient webClient = null;
 
+        /// <summary>
+        /// Setups the web client.
+        /// </summary>
+        [TestInitialize]
+        public void setupWebClient()
+        {
+            webClient = new WebClient();
+            webClient.BaseAddress = endPoint;
+            webClient.Headers[HttpRequestHeader.Authorization] = "Basic " + key;
+            webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
+        }
 
+        /// <summary>
+        /// Shows the list info.
+        /// </summary>
         [TestMethod]
         public void ShowListInfo()
         {
             var result = "";
-            using (var webClient = new WebClient())
+            using (webClient)
             {
-                webClient.BaseAddress = endPoint;
                 try
                 {
-                    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(key));
-                    webClient.Headers[HttpRequestHeader.Authorization] = "Basic " +key;
                     result = webClient.DownloadString("lists");
                     dynamic response = JObject.Parse(result);
 
@@ -39,31 +51,27 @@ namespace MailChimpsAPITesting
                 }
             }
         }
-
+        /// <summary>
+        /// Creates the and update new list.
+        /// </summary>
         [TestMethod]
         public void CreateAndUpdateNewList()
         {
             string json = String.Empty;
             dynamic payload = new JObject();
 
-            using (var webClient = new WebClient())
+            using (webClient)
             {
-                webClient.BaseAddress = endPoint;
-                webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
                 string readJson = String.Empty;
+                string newListName = Guid.NewGuid().ToString();
 
                 try
                 {
-                    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(key));
-
-                    webClient.Headers[HttpRequestHeader.Authorization] = "Basic " + key;
-
-
                     string start = System.IO.File.ReadAllText((@"../../../payloads/CreateNewList.json"));
 
                     IDictionary<string, string> map = new Dictionary<string, string>()
                     {
-                        { "List_Name", "This is new list names" },
+                        { "List_Name", newListName },
                         { "company_name", "CodeAndQA LLC" },
                         { "f_email_add", "aditya@codeandqa.com" }
                     };
@@ -75,7 +83,10 @@ namespace MailChimpsAPITesting
                     var result = webClient.UploadString("lists", "POST", readJson);
                     dynamic response = JObject.Parse(result);
 
-                    Assert.AreEqual("This is new list names", (string)response.name);
+                    Assert.AreEqual(newListName, (string)response.name);
+
+                    System.Threading.Thread.Sleep(10000);//Hard wait for review.
+
                     var idOfNewList = (string)response.id;
 
 
@@ -83,7 +94,7 @@ namespace MailChimpsAPITesting
                     response = JObject.Parse(result);
 
                     Assert.AreEqual("New and Updated List", (string)response.name);
-
+                    System.Threading.Thread.Sleep(10000);//Hard wait for review.
 
                 }
                 catch (Exception ex)
@@ -94,27 +105,25 @@ namespace MailChimpsAPITesting
 
         }
 
+        /// <summary>
+        /// Adds and delete new list.
+        /// </summary>
         [TestMethod]
         public void AddAndDeleteNewList()
         {
             string json = String.Empty;
             dynamic payload = new JObject();
 
-            using (var webClient = new WebClient())
+            using (webClient)
             {
-                webClient.BaseAddress = endPoint;
-                webClient.Headers[HttpRequestHeader.ContentType] = "application/json";
                 string readJson = String.Empty;
+                string newListName = Guid.NewGuid().ToString();
                 try
                 {
-                    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(key));
-
-                    webClient.Headers[HttpRequestHeader.Authorization] = "Basic " + key;
-
                     readJson = System.IO.File.ReadAllText((@"../../../payloads/CreateNewList.json"));
                     IDictionary<string, string> map = new Dictionary<string, string>()
                     {
-                        { "List_Name", "This is new list names" },
+                        { "List_Name", newListName },
                         { "company_name", "CodeAndQA LLC" },
                         { "f_email_add", "aditya@codeandqa.com" }
                     };
@@ -124,6 +133,7 @@ namespace MailChimpsAPITesting
 
                     var result = webClient.UploadString("lists", "POST", readJson);
                     dynamic response = JObject.Parse(result);
+                    System.Threading.Thread.Sleep(10000);//Hard wait for review.
 
                     var idOfNewList = (string)response.id;
                     result = webClient.UploadString("lists/"+idOfNewList, "DELETE", "");
@@ -138,18 +148,17 @@ namespace MailChimpsAPITesting
 
         }
 
-
+        /// <summary>
+        /// Delete all lists availabe in account.
+        /// </summary>
         [TestCleanup]
         public void CleanUpLists()
         {
             var result = "";
-            using (var webClient = new WebClient())
+            using (webClient)
             {
-                webClient.BaseAddress = endPoint;
                 try
                 {
-                    string credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(key));
-                    webClient.Headers[HttpRequestHeader.Authorization] = "Basic " + key;
                     result = webClient.DownloadString("lists");
                     dynamic response = JObject.Parse(result);
                     var listOfIds = new List<string>();
